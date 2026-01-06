@@ -1,13 +1,37 @@
 use std::sync::{Arc, Mutex};
 
 use crate::{
-    hardware::{
-        architecture::Palabra,
-        cpu::{ExternalInterrup, Registros},
-        ram::Ram,
-    },
+    hardware::{architecture::Palabra, ram::Ram, registers::Registros},
     utils::ContinueOrBreak,
 };
+#[derive(Debug)]
+pub struct ExternalInterrup {
+    pub int_overflow: bool,
+    pub int_underflow: bool,
+    pub int_dir_inv: bool,
+    pub int_inst_inv: bool,
+    pub int_io: bool,
+    pub int_clock: bool,
+    pub int_call_sys: bool,
+    pub int_cod_inte_inv: bool,
+    pub int_cod_callsys_inv: bool,
+}
+
+impl ExternalInterrup {
+    pub fn new() -> Self {
+        ExternalInterrup {
+            int_overflow: false,
+            int_underflow: false,
+            int_dir_inv: false,
+            int_inst_inv: false,
+            int_io: false,
+            int_clock: false,
+            int_call_sys: false,
+            int_cod_inte_inv: false,
+            int_cod_callsys_inv: false,
+        }
+    }
+}
 
 #[derive(Debug)]
 pub enum Interrups {
@@ -42,14 +66,13 @@ pub fn inst_inv() -> ContinueOrBreak {
     ContinueOrBreak::Break
 }
 
-pub fn end_io(externalInterrup: &mut ExternalInterrup) -> ContinueOrBreak {
-    externalInterrup.int_io = true;
-
+pub fn end_io() -> ContinueOrBreak {
+    println!("Termino I/O");
     ContinueOrBreak::Continue
 }
 
-pub fn clock(externalInterrup: &mut ExternalInterrup) -> ContinueOrBreak {
-    externalInterrup.int_reloj = true;
+pub fn clock() -> ContinueOrBreak {
+    println!("Clock");
     ContinueOrBreak::Continue
 }
 
@@ -81,17 +104,80 @@ pub fn handle_interrupt(
     regs: &mut Registros,
     cod_int: Interrups,
     ram: Arc<Mutex<Ram>>,
-    external_int: &mut ExternalInterrup,
+    external_int: Arc<Mutex<ExternalInterrup>>,
 ) -> ContinueOrBreak {
     match cod_int {
-        Interrups::Overflow => overflow(regs),
-        Interrups::Underflow => underflow(regs),
-        Interrups::DirInv => dir_inv(),
-        Interrups::InstInv => inst_inv(),
-        Interrups::EndIO => end_io(external_int),
-        Interrups::Clock => clock(external_int),
-        Interrups::CallSys => call_sys(regs, ram),
-        Interrups::CodIntInv => cod_int_inv(),
-        Interrups::CodCallSysInv => cod_call_sys_inv(),
+        Interrups::Overflow => {
+            {
+                let mut lock_int = external_int.lock().unwrap();
+                lock_int.int_overflow = false;
+            }
+
+            overflow(regs)
+        }
+        Interrups::Underflow => {
+            {
+                let mut lock_int = external_int.lock().unwrap();
+                lock_int.int_underflow = false;
+            }
+
+            underflow(regs)
+        }
+        Interrups::DirInv => {
+            {
+                let mut lock_int = external_int.lock().unwrap();
+                lock_int.int_dir_inv = false;
+            }
+
+            dir_inv()
+        }
+        Interrups::InstInv => {
+            {
+                let mut lock_int = external_int.lock().unwrap();
+                lock_int.int_inst_inv = false;
+            }
+
+            inst_inv()
+        }
+        Interrups::EndIO => {
+            {
+                let mut lock_int = external_int.lock().unwrap();
+                lock_int.int_io = false;
+            }
+
+            end_io()
+        }
+        Interrups::Clock => {
+            {
+                let mut lock_int = external_int.lock().unwrap();
+                lock_int.int_clock = false;
+            }
+
+            clock()
+        }
+        Interrups::CallSys => {
+            {
+                let mut lock_int = external_int.lock().unwrap();
+                lock_int.int_call_sys = false;
+            }
+
+            call_sys(regs, ram)
+        }
+        Interrups::CodIntInv => {
+            {
+                let mut lock_int = external_int.lock().unwrap();
+                lock_int.int_cod_inte_inv = false;
+            }
+
+            cod_int_inv()
+        }
+        Interrups::CodCallSysInv => {
+            {
+                let mut lock_int = external_int.lock().unwrap();
+                lock_int.int_cod_callsys_inv = false;
+            }
+
+            cod_call_sys_inv()
+        }
     }
 }

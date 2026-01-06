@@ -1,20 +1,5 @@
 use crate::hardware::{architecture::Palabra, interrupts::Interrups};
 use crate::utils::Errors;
-#[derive(Debug)]
-pub struct ExternalInterrup {
-    pub int_io: bool,
-    pub int_reloj: bool,
-}
-
-impl ExternalInterrup {
-    pub fn new() -> Self {
-        ExternalInterrup {
-            int_io: false,
-            int_reloj: false,
-        }
-    }
-}
-
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Pws {
     pub cod_codicion: i8,

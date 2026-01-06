@@ -1,15 +1,14 @@
 use crate::hardware::interrupts::Interrups;
 use crate::utils::Errors;
-
 pub type SectorData = [u8; 9];
 pub struct Disk {
-    disk: [[[SectorData; 100]; 10]; 10],
+    disk: [[[SectorData; 101]; 11]; 11],
 }
 
 impl Disk {
     pub fn new() -> Self {
         Disk {
-            disk: [[[[48; 9]; 100]; 10]; 10],
+            disk: [[[[48; 9]; 101]; 11]; 11],
         }
     }
 
