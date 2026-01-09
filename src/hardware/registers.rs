@@ -1,5 +1,5 @@
 use crate::hardware::{architecture::Palabra, interrupts::Interrups};
-use crate::utils::Errors;
+use crate::utils::{Errors, Result_op};
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Pws {
     pub cod_codicion: i8,
@@ -18,7 +18,7 @@ impl Pws {
         }
     }
 
-    pub fn set_codition(&mut self, val: i8) -> Result<(), Errors> {
+    pub fn set_codition(&mut self, val: i8) -> Result_op {
         if val > 3 || val < 0 {
             return Err(Errors {
                 msg: String::from("cod condicion invalido"),
@@ -30,7 +30,7 @@ impl Pws {
 
         Ok(())
     }
-    pub fn set_mode(&mut self, val: i8) -> Result<(), Errors> {
+    pub fn set_mode(&mut self, val: i8) -> Result_op {
         if val > 1 || val < 0 {
             return Err(Errors {
                 msg: String::from("cod modo invalido"),
@@ -42,7 +42,7 @@ impl Pws {
 
         Ok(())
     }
-    pub fn set_inte(&mut self, val: i8) -> Result<(), Errors> {
+    pub fn set_inte(&mut self, val: i8) -> Result_op {
         if val > 1 || val < 0 {
             return Err(Errors {
                 msg: String::from("allow inte invalido"),
@@ -54,8 +54,8 @@ impl Pws {
 
         Ok(())
     }
-    pub fn set_pc(&mut self, val: i32) -> Result<(), Errors> {
-        if val > 99999 || val < 0 {
+    pub fn set_pc(&mut self, val: i32) -> Result_op {
+        if val > 2000 || val < 0 {
             return Err(Errors {
                 msg: String::from("Dir Pc invalido"),
                 cod: Interrups::InstInv,
@@ -103,7 +103,7 @@ impl Registros {
         }
     }
 
-    pub fn set_mar(&mut self, pal: Palabra) -> Result<(), Errors> {
+    pub fn set_mar(&mut self, pal: Palabra) -> Result_op {
         if pal.convert() > 2000 {
             let err = Errors {
                 msg: String::from("Dirección de memoria invalida"),
@@ -132,7 +132,7 @@ impl Registros {
         self.ir = pal;
     }
 
-    pub fn set_rb(&mut self, pal: Palabra) -> Result<(), Errors> {
+    pub fn set_rb(&mut self, pal: Palabra) -> Result_op {
         if pal.convert() > 2000 {
             let err = Errors {
                 msg: String::from("Dirección de memoria invalida"),
@@ -154,7 +154,7 @@ impl Registros {
 
         Ok(())
     }
-    pub fn set_rl(&mut self, pal: Palabra) -> Result<(), Errors> {
+    pub fn set_rl(&mut self, pal: Palabra) -> Result_op {
         if pal.convert() > 2000 {
             let err = Errors {
                 msg: String::from("Dirección de memoria invalida"),
@@ -175,7 +175,7 @@ impl Registros {
         self.rl = pal;
         Ok(())
     }
-    pub fn set_rx(&mut self, pal: Palabra) -> Result<(), Errors> {
+    pub fn set_rx(&mut self, pal: Palabra) -> Result_op {
         if pal.convert() > 2000 {
             let err = Errors {
                 msg: String::from("Dirección de memoria invalida"),
@@ -196,7 +196,7 @@ impl Registros {
         self.rx = pal;
         Ok(())
     }
-    pub fn set_sp(&mut self, pal: Palabra) -> Result<(), Errors> {
+    pub fn set_sp(&mut self, pal: Palabra) -> Result_op {
         if pal.convert() > 2000 {
             let err = Errors {
                 msg: String::from("Dirección de memoria invalida"),

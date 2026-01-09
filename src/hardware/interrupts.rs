@@ -47,12 +47,10 @@ pub enum Interrups {
 }
 
 pub fn overflow(regs: &mut Registros) -> ContinueOrBreak {
-    regs.psw.set_codition(3).unwrap();
     ContinueOrBreak::Break
 }
 
 pub fn underflow(regs: &mut Registros) -> ContinueOrBreak {
-    regs.psw.set_codition(3).unwrap();
     ContinueOrBreak::Break
 }
 

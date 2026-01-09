@@ -11,7 +11,7 @@ use crate::{
         interrupts::{ExternalInterrup, Interrups},
         ram::Ram,
     },
-    utils::{Errors, convert_option_result, convert_result},
+    utils::{Errors, Result_op, convert_option_result, convert_result},
 };
 enum State_Dma {
     Succes,
@@ -23,6 +23,7 @@ pub struct Dma {
     pub cil_acceder: i8,
     pub pos_men: i32,
     pub estado: State_Dma,
+    pub modo: i8,
 }
 
 impl Dma {
@@ -33,14 +34,32 @@ impl Dma {
             cil_acceder: 0,
             pos_men: 0,
             estado: State_Dma::Succes,
+            modo: 0,
         }
     }
+
+    pub fn execute(
+        &mut self,
+        disk: &mut Disk,
+        mem: Arc<Mutex<Ram>>,
+        external_interrup: Arc<Mutex<ExternalInterrup>>,
+    ) -> Result_op {
+        let modo = self.modo;
+        if modo == 0 {
+            self.read_disk(disk, mem, external_interrup)?;
+        } else if modo == 1 {
+            self.write_disk(disk, mem, external_interrup)?;
+        }
+
+        Ok(())
+    }
+
     pub fn read_disk(
         &mut self,
         disk: &Disk,
         mem: Arc<Mutex<Ram>>,
         external_interrup: Arc<Mutex<ExternalInterrup>>,
-    ) -> Result<(), Errors> {
+    ) -> Result_op {
         thread::sleep(Duration::from_secs(1));
         let result = disk.read(self.cil_acceder, self.pista_acceder, self.sector_acceder);
 
@@ -113,7 +132,7 @@ impl Dma {
         disk: &mut Disk,
         mem: Arc<Mutex<Ram>>,
         external_interrup: Arc<Mutex<ExternalInterrup>>,
-    ) -> Result<(), Errors> {
+    ) -> Result_op {
         thread::sleep(Duration::from_secs(1));
         let pal_disk: String;
 

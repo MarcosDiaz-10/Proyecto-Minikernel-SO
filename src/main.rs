@@ -8,9 +8,13 @@ use hardware::{
     architecture::Palabra, disk::Disk, interrupts::Interrups, ram::Ram, registers::Registros,
 };
 
-use crate::hardware::{
-    dma::Dma,
-    interrupts::{ExternalInterrup, handle_interrupt},
+use crate::{
+    hardware::{
+        dma::Dma,
+        instructions::{self, Instruction},
+        interrupts::{ExternalInterrup, handle_interrupt},
+    },
+    utils::convert_to_string_format_pal,
 };
 
 fn main() {
@@ -100,6 +104,23 @@ fn main() {
 
         println!("{:?}", m);
     }
+
+    let prueba = convert_to_string_format_pal(09999999);
+    let palabra = Palabra::new(&prueba).unwrap();
+    let pal2 = Palabra::new(&String::from("00999999")).unwrap();
+
+    println!("{:?}", palabra);
+    registers.ac = palabra;
+    let instrucciones = Instruction::new(palabra);
+
+    registers.set_mdr(Palabra::new(&"00000000".to_string()).unwrap());
+
+    match instrucciones.mult(&mut registers) {
+        Ok(_) => (),
+        Err(E) => println!("{:?}", E),
+    }
+
+    println!("{}", palabra > pal2);
 
     // registers.psw.set_codition(0);
 

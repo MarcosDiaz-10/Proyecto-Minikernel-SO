@@ -5,6 +5,7 @@ pub struct Errors {
     pub cod: Interrups,
 }
 
+pub type Result_op = Result<(), Errors>;
 #[derive(Debug)]
 pub enum ContinueOrBreak {
     Continue,
@@ -32,5 +33,13 @@ pub fn convert_option_result<T>(
     match option {
         Some(val) => Ok(val),
         None => Err(Errors { msg, cod }),
+    }
+}
+
+pub fn convert_to_string_format_pal(pal: i32) -> String {
+    if pal < 0 {
+        return format!("1{:07}", pal.abs());
+    } else {
+        return format!("{:08}", pal);
     }
 }

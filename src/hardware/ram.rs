@@ -1,6 +1,6 @@
 use crate::{
     hardware::{architecture::Palabra, interrupts::Interrups, registers::Registros},
-    utils::Errors,
+    utils::{Errors, Result_op},
 };
 #[derive(Debug, PartialEq)]
 pub struct Ram {
@@ -25,7 +25,7 @@ impl Ram {
         Ok(self.ram[position_read as usize])
     }
 
-    pub fn writeMemory(&mut self, position_write: i32, pal: Palabra) -> Result<(), Errors> {
+    pub fn writeMemory(&mut self, position_write: i32, pal: Palabra) -> Result_op {
         if position_write > 2001 || position_write < 0 {
             return Err(Errors {
                 msg: String::from("Dirección a leer invalida"),

@@ -1,5 +1,5 @@
 use crate::hardware::interrupts::Interrups;
-use crate::utils::Errors;
+use crate::utils::{Errors, Result_op};
 pub type SectorData = [u8; 9];
 pub struct Disk {
     disk: [[[SectorData; 101]; 11]; 11],
@@ -24,7 +24,7 @@ impl Disk {
         Ok(String::from_utf8_lossy(data).to_string())
     }
 
-    pub fn write(&mut self, data: String, cil: i8, pista: i8, sec: i8) -> Result<(), Errors> {
+    pub fn write(&mut self, data: String, cil: i8, pista: i8, sec: i8) -> Result_op {
         if (cil > 10 || cil < 0) || (pista > 10 || pista < 0) || (sec > 100 || sec < 0) {
             return Err(Errors {
                 msg: String::from("Error al escribir del disco"),
