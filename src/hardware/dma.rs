@@ -8,7 +8,7 @@ use crate::{
     hardware::{
         architecture::Palabra,
         disk::Disk,
-        interrupts::{ExternalInterrup, Interrups},
+        interrupts::{External_interrupt, Interrups},
         ram::Ram,
     },
     utils::{Errors, Result_op, convert_option_result, convert_result},
@@ -16,6 +16,27 @@ use crate::{
 enum State_Dma {
     Succes,
     Error,
+}
+
+#[derive(Debug, Clone, Copy)]
+pub struct Dma_Config {
+    pub pista_acceder: i8,
+    pub sector_acceder: i8,
+    pub cil_acceder: i8,
+    pub pos_men: i32,
+    pub modo: i8,
+}
+
+impl Dma_Config {
+    pub fn new() -> Self {
+        Dma_Config {
+            pista_acceder: 0,
+            sector_acceder: 0,
+            cil_acceder: 0,
+            pos_men: 0,
+            modo: 0,
+        }
+    }
 }
 pub struct Dma {
     pub pista_acceder: i8,
@@ -42,7 +63,7 @@ impl Dma {
         &mut self,
         disk: &mut Disk,
         mem: Arc<Mutex<Ram>>,
-        external_interrup: Arc<Mutex<ExternalInterrup>>,
+        external_interrup: Arc<Mutex<External_interrupt>>,
     ) -> Result_op {
         let modo = self.modo;
         if modo == 0 {
@@ -58,7 +79,7 @@ impl Dma {
         &mut self,
         disk: &Disk,
         mem: Arc<Mutex<Ram>>,
-        external_interrup: Arc<Mutex<ExternalInterrup>>,
+        external_interrup: Arc<Mutex<External_interrupt>>,
     ) -> Result_op {
         thread::sleep(Duration::from_secs(1));
         let result = disk.read(self.cil_acceder, self.pista_acceder, self.sector_acceder);
@@ -131,7 +152,7 @@ impl Dma {
         &mut self,
         disk: &mut Disk,
         mem: Arc<Mutex<Ram>>,
-        external_interrup: Arc<Mutex<ExternalInterrup>>,
+        external_interrup: Arc<Mutex<External_interrupt>>,
     ) -> Result_op {
         thread::sleep(Duration::from_secs(1));
         let pal_disk: String;

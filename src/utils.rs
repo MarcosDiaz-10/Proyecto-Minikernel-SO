@@ -35,7 +35,7 @@ pub fn convert_option_result<T>(
         None => Err(Errors { msg, cod }),
     }
 }
-
+//Transforma de i32 a String Palabra
 pub fn convert_to_string_format_pal(pal: i32) -> String {
     if pal < 0 {
         return format!("1{:07}", pal.abs());

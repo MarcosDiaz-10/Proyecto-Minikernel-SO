@@ -1,11 +1,14 @@
-use std::sync::{Arc, Mutex};
+use std::{
+    marker,
+    sync::{Arc, Mutex},
+};
 
 use crate::{
     hardware::{architecture::Palabra, ram::Ram, registers::Registros},
     utils::ContinueOrBreak,
 };
 #[derive(Debug)]
-pub struct ExternalInterrup {
+pub struct External_interrupt {
     pub int_overflow: bool,
     pub int_underflow: bool,
     pub int_dir_inv: bool,
@@ -17,9 +20,9 @@ pub struct ExternalInterrup {
     pub int_cod_callsys_inv: bool,
 }
 
-impl ExternalInterrup {
+impl External_interrupt {
     pub fn new() -> Self {
-        ExternalInterrup {
+        External_interrupt {
             int_overflow: false,
             int_underflow: false,
             int_dir_inv: false,
@@ -74,18 +77,50 @@ pub fn clock() -> ContinueOrBreak {
     ContinueOrBreak::Continue
 }
 
-pub fn call_sys(regs: &Registros, ram: Arc<Mutex<Ram>>) -> ContinueOrBreak {
+pub fn call_sys(
+    regs: &Registros,
+    ram: Arc<Mutex<Ram>>,
+    external_int: Arc<Mutex<External_interrupt>>,
+) -> ContinueOrBreak {
     let codCall = regs.ac.convert();
 
-    let parametro: Palabra;
+    let parametro;
     {
         let state_ram = ram.lock().unwrap();
 
-        parametro = state_ram.readMemory(regs.sp.convert()).unwrap();
+        parametro = state_ram.readMemory(regs.sp.convert());
     }
 
+    let parametro_pal = match parametro {
+        Ok(pal) => pal,
+        Err(_) => {
+            {
+                external_int.lock().unwrap().int_dir_inv = true;
+            }
+            return ContinueOrBreak::Continue;
+        }
+    };
+
     match codCall {
-        _ => println!("Llamada al sistema {codCall}, parametro{:?}", parametro),
+        1 => {
+            println!(
+                "Llamada al sistema {} , parametro: {}",
+                codCall,
+                parametro_pal.convert()
+            );
+
+            return ContinueOrBreak::Break;
+        }
+        _ => {
+            println!(
+                "Llamada al sistema no encontrada {codCall}, parametro{:?}",
+                parametro
+            );
+
+            {
+                external_int.lock().unwrap().int_cod_callsys_inv = true;
+            }
+        }
     }
     ContinueOrBreak::Continue
 }
@@ -102,7 +137,7 @@ pub fn handle_interrupt(
     regs: &mut Registros,
     cod_int: Interrups,
     ram: Arc<Mutex<Ram>>,
-    external_int: Arc<Mutex<ExternalInterrup>>,
+    external_int: Arc<Mutex<External_interrupt>>,
 ) -> ContinueOrBreak {
     match cod_int {
         Interrups::Overflow => {
@@ -159,7 +194,7 @@ pub fn handle_interrupt(
                 lock_int.int_call_sys = false;
             }
 
-            call_sys(regs, ram)
+            call_sys(regs, ram, external_int)
         }
         Interrups::CodIntInv => {
             {

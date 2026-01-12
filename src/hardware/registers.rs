@@ -1,3 +1,4 @@
+use crate::hardware::instructions::Instruction;
 use crate::hardware::{architecture::Palabra, interrupts::Interrups};
 use crate::utils::{Errors, Result_op};
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -79,7 +80,7 @@ impl Pws {
 pub struct Registros {
     pub mar: Palabra,
     pub mdr: Palabra,
-    pub ir: Palabra,
+    pub ir: Instruction,
     pub rb: Palabra,
     pub rl: Palabra,
     pub rx: Palabra,
@@ -93,7 +94,7 @@ impl Registros {
         Registros {
             mar: Palabra::new("00000000").unwrap(),
             mdr: Palabra::new("00000000").unwrap(),
-            ir: Palabra::new("00000000").unwrap(),
+            ir: Instruction::new(Palabra::new("00000000").unwrap()),
             rb: Palabra::new("00000000").unwrap(),
             rl: Palabra::new("00000000").unwrap(),
             rx: Palabra::new("00000000").unwrap(),
@@ -128,7 +129,7 @@ impl Registros {
     pub fn set_mdr(&mut self, pal: Palabra) {
         self.mdr = pal;
     }
-    pub fn set_ir(&mut self, pal: Palabra) {
+    pub fn set_ir(&mut self, pal: Instruction) {
         self.ir = pal;
     }
 
