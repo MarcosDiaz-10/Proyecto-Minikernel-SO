@@ -6,7 +6,7 @@ Como instalar el proyecto desde el .tar que les pase:
 me da flojera subirlo a docker hub JAJJAJAJJAJAJJAAJAJ
 ```
 docker load -i mi-proyecto.tar
-docker run mi-proyecto-rust
+docker run  -v "$(pwd)/archivos_para_procesar:/input" mi-proyecto-rust
 ```
 
 Si alguien se atreve a querer compilarlo seria: 
@@ -33,7 +33,7 @@ Consideraciones hasta ahora:
 - Para seguir en modo debugger se usa el comando `next`
 - Para terminar el proyecto en general se usa `exit`
 - Considero que la cuenta de las lineas empieza desde 1
-- Los programas del input se suben en /input de la raiz (Por si lo compilan), en docker ahí les pase el comando y allí ponen los programas a cargar
+- Los programas del input se suben en `/input` de la raiz (Por si lo compilan), en docker ahí les pase el comando y allí ponen los programas a cargar
 
 Cosas que faltan:
 
