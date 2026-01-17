@@ -27,6 +27,10 @@ impl Instruction {
         }
     }
 
+    pub fn conver_to_palabra(self) -> Palabra {
+        Palabra::new(&format!("{:02}{:01}{:05}", self.opcode, self.dir, self.value).to_string())
+            .unwrap()
+    }
     // pub fn sum(&self, regs: &mut Registros) -> Result_op {
     //     let pal = (regs.ac + regs.mdr);
 

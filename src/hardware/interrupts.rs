@@ -78,44 +78,51 @@ pub fn clock() -> ContinueOrBreak {
 }
 
 pub fn call_sys(
-    regs: &Registros,
+    regs: &mut Registros,
     ram: Arc<Mutex<Ram>>,
     external_int: Arc<Mutex<External_interrupt>>,
 ) -> ContinueOrBreak {
     let codCall = regs.ac.convert();
 
-    let parametro;
-    {
-        let state_ram = ram.lock().unwrap();
-
-        parametro = state_ram.readMemory(regs.sp.convert());
-    }
-
-    let parametro_pal = match parametro {
-        Ok(pal) => pal,
-        Err(_) => {
-            {
-                external_int.lock().unwrap().int_dir_inv = true;
-            }
-            return ContinueOrBreak::Continue;
-        }
-    };
-
     match codCall {
         1 => {
-            println!(
-                "Llamada al sistema {} , parametro: {}",
-                codCall,
-                parametro_pal.convert()
-            );
+            println!("Llamada al sistema {}", codCall,);
 
             return ContinueOrBreak::Break;
         }
         _ => {
-            println!(
-                "Llamada al sistema no encontrada {codCall}, parametro{:?}",
-                parametro
-            );
+            //Código para llamada que reciba parametro
+
+            // let parametro;
+            // {
+            //     let state_ram = ram.lock().unwrap();
+
+            //     parametro = state_ram.readMemory(regs.sp.convert());
+            //     let pal = Palabra::new(&"00000001".to_string()).unwrap();
+            //     let new_sp = (regs.sp + pal);
+            //     match new_sp {
+            //         Ok(p) => {
+            //             regs.set_sp(p);
+            //         }
+            //         Err(err) => {
+            //             {
+            //                 external_int.lock().unwrap().int_dir_inv = true;
+            //             }
+            //             return ContinueOrBreak::Break;
+            //         }
+            //     }
+            // }
+
+            // let parametro_pal = match parametro {
+            //     Ok(pal) => pal,
+            //     Err(_) => {
+            //         {
+            //             external_int.lock().unwrap().int_dir_inv = true;
+            //         }
+            //         return ContinueOrBreak::Continue;
+            //     }
+            // };
+            println!("Llamada al sistema no encontrada {codCall}");
 
             {
                 external_int.lock().unwrap().int_cod_callsys_inv = true;

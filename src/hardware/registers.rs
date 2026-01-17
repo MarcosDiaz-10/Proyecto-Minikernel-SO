@@ -10,13 +10,22 @@ pub struct Pws {
 }
 
 impl Pws {
-    fn new() -> Self {
+    pub fn new() -> Self {
         Pws {
             cod_codicion: 0,
             modo_op: 0,
             inte: 1,
             pc: 0,
         }
+    }
+
+    pub fn convert_to_psw_by_palabra(&mut self, pal: Palabra) -> Result_op {
+        self.set_codition((pal.palabra / 10000000) as i8)?;
+        self.set_mode(((pal.palabra / 1000000) % 10) as i8)?;
+        self.set_inte(((pal.palabra / 100000) % 10) as i8)?;
+        self.set_pc((pal.palabra % 10000) as i32)?;
+
+        Ok(())
     }
 
     pub fn set_codition(&mut self, val: i8) -> Result_op {

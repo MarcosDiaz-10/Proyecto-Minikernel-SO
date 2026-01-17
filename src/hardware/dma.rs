@@ -13,9 +13,12 @@ use crate::{
     },
     utils::{Errors, Result_op, convert_option_result, convert_result},
 };
-enum State_Dma {
+#[derive(Debug, Clone, Copy, PartialEq)]
+
+pub enum State_Dma {
     Succes,
     Error,
+    Off,
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -24,6 +27,7 @@ pub struct Dma_Config {
     pub sector_acceder: i8,
     pub cil_acceder: i8,
     pub pos_men: i32,
+    pub state: State_Dma,
     pub modo: i8,
 }
 
@@ -34,6 +38,7 @@ impl Dma_Config {
             sector_acceder: 0,
             cil_acceder: 0,
             pos_men: 0,
+            state: State_Dma::Succes,
             modo: 0,
         }
     }
@@ -62,8 +67,8 @@ impl Dma {
     pub fn execute(
         &mut self,
         disk: &mut Disk,
-        mem: Arc<Mutex<Ram>>,
-        external_interrup: Arc<Mutex<External_interrupt>>,
+        mem: &Arc<Mutex<Ram>>,
+        external_interrup: &Arc<Mutex<External_interrupt>>,
     ) -> Result_op {
         let modo = self.modo;
         if modo == 0 {
@@ -78,8 +83,8 @@ impl Dma {
     pub fn read_disk(
         &mut self,
         disk: &Disk,
-        mem: Arc<Mutex<Ram>>,
-        external_interrup: Arc<Mutex<External_interrupt>>,
+        mem: &Arc<Mutex<Ram>>,
+        external_interrup: &Arc<Mutex<External_interrupt>>,
     ) -> Result_op {
         thread::sleep(Duration::from_secs(1));
         let result = disk.read(self.cil_acceder, self.pista_acceder, self.sector_acceder);
@@ -151,8 +156,8 @@ impl Dma {
     pub fn write_disk(
         &mut self,
         disk: &mut Disk,
-        mem: Arc<Mutex<Ram>>,
-        external_interrup: Arc<Mutex<External_interrupt>>,
+        mem: &Arc<Mutex<Ram>>,
+        external_interrup: &Arc<Mutex<External_interrupt>>,
     ) -> Result_op {
         thread::sleep(Duration::from_secs(1));
         let pal_disk: String;

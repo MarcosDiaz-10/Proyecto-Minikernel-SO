@@ -36,4 +36,24 @@ impl Ram {
         self.ram[position_write as usize] = pal;
         Ok(())
     }
+
+    pub fn is_empty(&self, pos_init: i32, pos_end: i32) -> Result<bool, Errors> {
+        let mut pos = pos_init;
+
+        if pos_init < 301 || pos_end >= 2001 || pos_init > pos_end {
+            return Err(Errors {
+                msg: String::from("Rango de memoria invalido"),
+                cod: Interrups::DirInv,
+            });
+        }
+
+        while pos <= pos_end {
+            let pal = self.readMemory(pos)?;
+            if pal.convert() != 0 {
+                return Ok(false);
+            }
+            pos += 1;
+        }
+        Ok(true)
+    }
 }

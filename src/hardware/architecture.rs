@@ -29,7 +29,6 @@ impl Palabra {
 
     pub fn convert(&self) -> i32 {
         let sig = self.palabra / 10000000;
-        println!("{sig}");
         match sig {
             0 => (self.palabra) as i32,
             1 => -1 * (self.palabra - 10000000) as i32,
