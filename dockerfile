@@ -1,7 +1,7 @@
 # --- ETAPA 1: BUILDER (El obrero) ---
 # Usamos la imagen oficial de Rust para compilar.
 # Le ponemos un alias "builder" para referenciarla después.
-FROM rust:1.75 as builder
+FROM rust:1.92 as builder
 
 # Creamos un directorio de trabajo dentro del contenedor
 WORKDIR /usr/src/app
@@ -20,7 +20,7 @@ RUN cargo build --release
 FROM debian:bookworm-slim
 
 # Actualizamos certificados y librerías básicas por seguridad (buena práctica de ciberseguridad)
-RUN apt-get update && apt-get install -y extra-runtime-dependencies && rm -rf /var/lib/apt/lists/*
+# RUN apt-get update && apt-get install -y extra-runtime-dependencies && rm -rf /var/lib/apt/lists/*
 
 # Copiamos SOLAMENTE el binario desde la etapa "builder".
 # OJO: Reemplazá "nombre_de_tu_app" por el nombre real que está en tu Cargo.toml
